@@ -1,6 +1,6 @@
-# Zabbix template – Legrand UPS (CS121 network card)
+# Zabbix templates – Legrand UPS (CS121 / CS141 network card)
 
-Zabbix 7.4 template for monitoring **Legrand UPS** units with the **CS121 SNMP network card** (Generex). It uses the standard **UPS-MIB (RFC 1628)**, so it should also work with other UPS units that use a CS121 card.
+Zabbix 7.4 templates for monitoring **Legrand UPS** units with the **CS121** or **CS141 SNMP network card** (Generex). Both use the standard **UPS-MIB (RFC 1628)**, so they should also work with other UPS units that use these cards.
 
 ## ✨ Highlights
 
@@ -10,11 +10,12 @@ Zabbix 7.4 template for monitoring **Legrand UPS** units with the **CS121 SNMP n
 
 ## Contents
 
-| File | Description |
-|------|-------------|
-| `template_legrand_ups_cs121.yaml` | Zabbix export with the template `HW UPS Legrand CS121` and the host graph `Battery` |
+| File | Template | Use for |
+|------|----------|---------|
+| `template_legrand_ups_cs121.yaml` | `HW UPS Legrand CS121` | UPS with the older **CS121** card |
+| `template_legrand_ups_cs141.yaml` | `HW UPS Legrand CS141` | UPS with the newer **CS141** card |
 
-### `HW UPS Legrand CS121` (link to the UPS host)
+Both templates have the same items, discovery rules and triggers, plus the host graph `Battery`. The differences are listed in [CS121 vs. CS141](#cs121-vs-cs141).
 
 **Items**
 - Battery: status, estimated charge remaining (%), estimated minutes remaining, voltage, temperature, seconds on battery
@@ -42,36 +43,47 @@ Each phase also gets its own graph (`UPS Input Phase N`, `UPS Output Phase N`, `
 | UPS running on battery (> 30 s) | High |
 | Battery status not normal | High |
 | Battery charge depleted (< 20 %) | High |
-| Battery temperature high (> 60 °C) | High |
+| Battery temperature high | High |
 | UPS input power line bad | High |
 | UPS overloaded phase N (> 60 %) | High |
 | Output voltage outside nominal phase N (< 200 V or > 250 V) | High |
 | High ICMP ping loss | High |
 | Battery charge less than 80 % | Warning |
 | Battery time remaining below 10 minutes | Warning |
-| Battery temperature warning (> 50 °C) | Warning |
+| Battery temperature warning | Warning |
 | UPS alarm present | Warning |
-| Input frequency outside nominal phase N (< 47 Hz or > 53 Hz) | Warning |
+| Input frequency outside nominal phase N | Warning |
 | UPS low output power phase N (< 10 W) | Warning |
 | UPS bypassed phase N | Warning |
 | High ICMP ping response time | Warning |
 | UPS load changed phase N (± 1000 W) | Info |
 | Device rebooted | Info |
 
-All triggers depend on *HOST DOWN*, so when the UPS is unreachable you only get one alert. Most triggers can be closed manually and are tagged `Loc: {INVENTORY.LOCATION1}`.
+All triggers depend on *HOST DOWN*, so when the UPS is unreachable you only get one alert. Device triggers are tagged `Loc: {INVENTORY.LOCATION1}`.
+
+### CS121 vs. CS141
+
+| | CS121 | CS141 |
+|---|---|---|
+| SNMP OIDs | without `.0` suffix | with `.0` suffix |
+| Battery temperature warning / high | > 50 °C / > 60 °C | > 55 °C / > 65 °C |
+| Input frequency outside nominal | < 47 Hz or > 53 Hz | < 45 Hz or > 55 Hz |
+| UPS low output power (< 10 W) | enabled | disabled (not discovered) |
+| Battery temperature warning depends on high | no | yes |
+| Phase triggers can be closed manually | yes | no |
 
 ## Requirements
 
 - Zabbix server / proxy **7.4** or newer
-- SNMP (v1 / v2c) enabled on the CS121 card, reachable from the Zabbix server / proxy
+- SNMP (v1 / v2c) enabled on the CS121 / CS141 card, reachable from the Zabbix server / proxy
 - `fping` installed on the server / proxy (ICMP items)
 
 ## Installation
 
-1. **Import the template**: *Data collection → Templates → Import* → `template_legrand_ups_cs121.yaml`
+1. **Import the template** that matches your card: *Data collection → Templates → Import* → `template_legrand_ups_cs121.yaml` or `template_legrand_ups_cs141.yaml`
 2. **Create the UPS host**:
-   - Add an SNMP interface (CS121 IP address) and set the SNMP community
-   - Link the template `HW UPS Legrand CS121`
+   - Add an SNMP interface (network card IP address) and set the SNMP community
+   - Link the template `HW UPS Legrand CS121` or `HW UPS Legrand CS141`
    - Turn on host inventory (*Automatic*) if you want vendor, model and location filled in
 3. Wait for discovery to run (phase discovery runs once a day; you can trigger it with *Execute now*).
 
@@ -86,14 +98,15 @@ Set the SNMP community **on the host** (or as a global macro), never in the temp
 
 ## Notes
 
-- The thresholds for voltage (200–250 V), frequency (47–53 Hz), load (60 %) and battery temperature (50 / 60 °C) are set for a 230 V / 50 Hz grid. Edit the trigger prototypes if your UPS or grid is different.
+- The thresholds for voltage (200–250 V), frequency, load (60 %) and battery temperature are set for a 230 V / 50 Hz grid. Edit the trigger prototypes if your UPS or grid is different.
 - If your UPS has no bypass, the *UPS Bypass Phases* rule finds nothing and creates no items.
+- Don't link both templates to the same host. They use the same item keys.
 
 ## Custom work & support
 
-Need something extra? I can extend or customize this template for your company's needs, for example new metrics, triggers, dashboards, other UPS models or integration with your environment. Feel free to get in touch: 📧 [info@duprtech.sk](mailto:info@duprtech.sk)
+Need something extra? I can extend or customize these templates for your company's needs, for example new metrics, triggers, dashboards, other UPS models or integration with your environment. Feel free to get in touch: 📧 [info@duprtech.sk](mailto:info@duprtech.sk)
 
-If this template saved you time and you're happy with my work, you can buy me a coffee ☕
+If these templates saved you time and you're happy with my work, you can buy me a coffee ☕
 
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/duprtech)
 
