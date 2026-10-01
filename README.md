@@ -1,6 +1,6 @@
-# Zabbix templates – Legrand UPS (CS121 / CS141 network card)
+# Zabbix templates – UPS with Generex CS121 / CS141 card (Legrand and other vendors)
 
-Zabbix 7.4 templates for monitoring **Legrand UPS** units with the **CS121** or **CS141 SNMP network card** (Generex). Both use the standard **UPS-MIB (RFC 1628)**, so they should also work with other UPS units that use these cards.
+Zabbix 7.4 templates for monitoring UPS units with the **Generex CS121** or **CS141 SNMP network card**. They were built and tested on **Legrand** UPS units, but they only use the standard **UPS-MIB (RFC 1628)**, so they work with UPS units from **other vendors** too. See [Compatibility](#compatibility).
 
 ## ✨ Highlights
 
@@ -12,8 +12,8 @@ Zabbix 7.4 templates for monitoring **Legrand UPS** units with the **CS121** or 
 
 | File | Template | Use for |
 |------|----------|---------|
-| `template_legrand_ups_cs121.yaml` | `HW UPS Legrand CS121` | UPS with the older **CS121** card |
-| `template_legrand_ups_cs141.yaml` | `HW UPS Legrand CS141` | UPS with the newer **CS141** card |
+| `template_ups_generex_cs121.yaml` | `HW UPS Generex CS121 (Legrand and other UPS, RFC 1628)` | UPS with the older **CS121** card |
+| `template_ups_generex_cs141.yaml` | `HW UPS Generex CS141 (Legrand and other UPS, RFC 1628)` | UPS with the newer **CS141** card |
 
 Both templates have the same items, discovery rules and triggers, plus the host graph `Battery`. The differences are listed in [CS121 vs. CS141](#cs121-vs-cs141).
 
@@ -61,6 +61,20 @@ Each phase also gets its own graph (`UPS Input Phase N`, `UPS Output Phase N`, `
 
 All triggers depend on *HOST DOWN*, so when the UPS is unreachable you only get one alert. Device triggers are tagged `Loc: {INVENTORY.LOCATION1}`.
 
+## Compatibility
+
+The templates don't use any vendor-specific OIDs, only the standard UPS-MIB (RFC 1628, `1.3.6.1.2.1.33`). They should work with:
+
+- ✅ **Any UPS with a Generex CS121 / CS141 card**, whatever the brand. Generex cards are built into UPS units from many vendors, often under the vendor's own name. Tested on **Legrand**.
+- ✅ **Other SNMP cards that support RFC 1628**, for example Eaton Network-M2 or Socomec Net Vision (not tested).
+- ⚠️ **APC Network Management Card**: supports UPS-MIB only partly. A template based on PowerNet-MIB is a better fit there.
+
+Things to check on a UPS from a different vendor:
+
+- Some UPS units don't report every value (for example battery temperature, bypass or power per phase). Those items become *Not supported*, or return 0 and can raise the *Low output power* trigger. Disable what your UPS doesn't have.
+- Battery voltage, input current and frequency are divided by 10, as the CS121 / CS141 card reports them. A different card may use another scale.
+- If one template doesn't return data, try the other one. CS121 reads OIDs without the `.0` suffix and CS141 with it.
+
 ### CS121 vs. CS141
 
 | | CS121 | CS141 |
@@ -75,15 +89,15 @@ All triggers depend on *HOST DOWN*, so when the UPS is unreachable you only get 
 ## Requirements
 
 - Zabbix server / proxy **7.4** or newer
-- SNMP (v1 / v2c) enabled on the CS121 / CS141 card, reachable from the Zabbix server / proxy
+- SNMP (v1 / v2c) enabled on the network card, reachable from the Zabbix server / proxy
 - `fping` installed on the server / proxy (ICMP items)
 
 ## Installation
 
-1. **Import the template** that matches your card: *Data collection → Templates → Import* → `template_legrand_ups_cs121.yaml` or `template_legrand_ups_cs141.yaml`
+1. **Import the template** that matches your card: *Data collection → Templates → Import* → `template_ups_generex_cs121.yaml` or `template_ups_generex_cs141.yaml`
 2. **Create the UPS host**:
    - Add an SNMP interface (network card IP address) and set the SNMP community
-   - Link the template `HW UPS Legrand CS121` or `HW UPS Legrand CS141`
+   - Link the template `HW UPS Generex CS121 (...)` or `HW UPS Generex CS141 (...)`
    - Turn on host inventory (*Automatic*) if you want vendor, model and location filled in
 3. Wait for discovery to run (phase discovery runs once a day; you can trigger it with *Execute now*).
 
@@ -101,6 +115,7 @@ Set the SNMP community **on the host** (or as a global macro), never in the temp
 - The thresholds for voltage (200–250 V), frequency, load (60 %) and battery temperature are set for a 230 V / 50 Hz grid. Edit the trigger prototypes if your UPS or grid is different.
 - If your UPS has no bypass, the *UPS Bypass Phases* rule finds nothing and creates no items.
 - Don't link both templates to the same host. They use the same item keys.
+- Upgrading from an older version: the technical template names stay `HW UPS Legrand CS121` / `HW UPS Legrand CS141`, so importing the new file updates the existing template and keeps your hosts and history.
 
 ## Custom work & support
 
