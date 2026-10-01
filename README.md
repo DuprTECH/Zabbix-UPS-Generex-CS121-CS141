@@ -69,6 +69,38 @@ The templates don't use any vendor-specific OIDs, only the standard UPS-MIB (RFC
 - ✅ **Other SNMP cards that support RFC 1628**, for example Eaton Network-M2 or Socomec Net Vision (not tested).
 - ⚠️ **APC Network Management Card**: supports UPS-MIB only partly. A template based on PowerNet-MIB is a better fit there.
 
+### UPS vendors that ship Generex CS121 / CS141 cards
+
+Generex makes CS121 / CS141 firmware for the following UPS vendors (OEM firmware list on [generex.de](https://www.generex.de/support/downloads/ups/cs141), October 2026). A UPS from any of these vendors with a CS121 or CS141 card (often sold under the vendor's own name) should work with these templates. Not every UPS model from a vendor uses a Generex card, so check which card your UPS has.
+
+| | | | |
+|---|---|---|---|
+| ABB | Ablerex | AdPoS | AEG Power Solutions |
+| AG IT Project | AKI Power Systems | Akkutronik | Allnet |
+| Alpha | Altervac | apra net | AROS (Riello) |
+| Astrid | Benning | Borri | British Power Conversion |
+| CET | Centiel ² | Compu Power South Africa | Coromatic |
+| CTA | Delta Electronics | DFM Select | DKC Europe |
+| DRS Pivotal Power | E-TEC | Eaton / Powerware | Effekta |
+| Elinex | ELIT | Enedo | EnerSys |
+| Errepi | Eurotech Sweden | Exponential Power | FSB-Power |
+| Fuji Electric | General Electric (GE) | Gustav Klein | Gutor |
+| Hoppecke | Infosec | Inform | International Business Resources ² |
+| Jovy Atlas | Kamic | Kaufel | Kess |
+| **Legrand** (tested) | Leistung ² | Meta System Energy | Multimatic |
+| NetMinder | Newave | Nitram | Online USV-Systeme |
+| Phoenix Contact ¹ | Piller Power Systems | Power-All | Power Shield ² |
+| Predictive Technology | Rehlko (Kohler Power) | Riello | Roline |
+| Roton | S2S | Salicru | Sander |
+| Sapotec | Schneider Electric | Sicotec | Siel |
+| SNG | Staco Energy | Statron | Thycon |
+| Triathlon | TwinSource | UPS Service | Vertiv |
+| Woehrle | XPC | | |
+
+¹ CS121 only &nbsp; ² CS141 only
+
+Only **Legrand** has been tested. For the other vendors this list says that a Generex card exists for them, not that every value is reported. Feedback on other UPS models is welcome, open an issue or write to [info@duprtech.sk](mailto:info@duprtech.sk).
+
 Things to check on a UPS from a different vendor:
 
 - Some UPS units don't report every value (for example battery temperature, bypass or power per phase). Those items become *Not supported*, or return 0 and can raise the *Low output power* trigger. Disable what your UPS doesn't have.
