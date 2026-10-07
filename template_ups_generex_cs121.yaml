@@ -20,8 +20,11 @@ zabbix_export:
         so the same template works for 1-phase and 3-phase UPS units.
 
         Requirements: Zabbix 7.4+, SNMP enabled on the CS121 card, fping on the server/proxy.
-        Source: https://github.com/DuprTECH
+        Source / latest version: https://github.com/DuprTECH/Zabbix-UPS-Generex-CS121-CS141
         Contact / custom work: info@duprtech.sk
+      vendor:
+        name: DuprTECH
+        version: 7.4-1
       groups:
         - name: 'Templates/Network devices'
       items:
