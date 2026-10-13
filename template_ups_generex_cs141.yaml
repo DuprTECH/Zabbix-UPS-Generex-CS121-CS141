@@ -5,11 +5,11 @@ zabbix_export:
       name: 'Templates/Network devices'
   templates:
     - uuid: 73fb0c42f8a443e3945dae0c84ff32b3
-      template: 'HW UPS Legrand CS141'
-      name: 'HW UPS Generex CS141 (Legrand and other UPS, RFC 1628)'
+      template: 'UPS Generex CS141'
+      name: 'UPS CS141 (Generex card)'
       description: |
         UPS monitoring via SNMP through the Generex CS141 network card (standard UPS-MIB, RFC 1628).
-        Works with any UPS that has a CS141 card (Legrand and other vendors) and with other
+        Works with any UPS that has a CS141 card (whatever the UPS brand) and with other
         SNMP cards that support RFC 1628 (some values may be missing, depending on the UPS).
         - Battery: status, charge, runtime remaining, voltage, temperature, time on battery
         - Alarms, input line bads, identification and inventory
@@ -24,7 +24,7 @@ zabbix_export:
         Contact / custom work: info@duprtech.sk
       vendor:
         name: DuprTECH
-        version: 7.4-1
+        version: 7.4-2
       groups:
         - name: 'Templates/Network devices'
       items:
@@ -40,13 +40,13 @@ zabbix_export:
               value: Status
           triggers:
             - uuid: 6bc6495065a341729dc74f7a0e4bd902
-              expression: 'min(/HW UPS Legrand CS141/icmppingloss[,10,,24,],5m)>{$ICMP_LOSS_WARN} and min(/HW UPS Legrand CS141/icmppingloss[,10,,24,],5m)<100'
+              expression: 'min(/UPS Generex CS141/icmppingloss[,10,,24,],5m)>{$ICMP_LOSS_WARN} and min(/UPS Generex CS141/icmppingloss[,10,,24,],5m)<100'
               name: 'High ICMP ping loss'
               priority: HIGH
               description: 'Last value: {ITEM.LASTVALUE1}.'
               dependencies:
                 - name: 'HOST DOWN ! (Unavailable by ICMP ping)'
-                  expression: 'max(/HW UPS Legrand CS141/icmpping[,1,,24,],#3)=0'
+                  expression: 'max(/UPS Generex CS141/icmpping[,1,,24,],#3)=0'
         - uuid: d4b822ce62ff4649a783cd55252699d6
           name: 'ICMP response time'
           type: SIMPLE
@@ -59,13 +59,13 @@ zabbix_export:
               value: Status
           triggers:
             - uuid: e10546f2085a4419895e6dce98d5560f
-              expression: 'avg(/HW UPS Legrand CS141/icmppingsec[,1,,24,],5m)>{$ICMP_RESPONSE_TIME_WARN}'
+              expression: 'avg(/UPS Generex CS141/icmppingsec[,1,,24,],5m)>{$ICMP_RESPONSE_TIME_WARN}'
               name: 'High ICMP ping response time'
               priority: WARNING
               description: 'Last value: {ITEM.LASTVALUE1}.'
               dependencies:
                 - name: 'HOST DOWN ! (Unavailable by ICMP ping)'
-                  expression: 'max(/HW UPS Legrand CS141/icmpping[,1,,24,],#3)=0'
+                  expression: 'max(/UPS Generex CS141/icmpping[,1,,24,],#3)=0'
         - uuid: 303ffc507be84d11bcdb980908fa9e30
           name: 'ICMP ping'
           type: SIMPLE
@@ -78,7 +78,7 @@ zabbix_export:
               value: Status
           triggers:
             - uuid: d62cbc7911414c038b6825b79f826c25
-              expression: 'max(/HW UPS Legrand CS141/icmpping[,1,,24,],#3)=0'
+              expression: 'max(/UPS Generex CS141/icmpping[,1,,24,],#3)=0'
               name: 'HOST DOWN ! (Unavailable by ICMP ping)'
               priority: DISASTER
               description: |
@@ -97,14 +97,14 @@ zabbix_export:
               value: Health
           triggers:
             - uuid: 934ed1af83a5420884123f60c2f146dc
-              expression: 'last(/HW UPS Legrand CS141/upsAlarmsPresent)<>0'
+              expression: 'last(/UPS Generex CS141/upsAlarmsPresent)<>0'
               name: 'UPS Alarm Present'
               priority: WARNING
               description: 'On your {HOST.NAME} are activated {ITEM.VALUE} alarms. Please check UPS - usually UPS must produce some sounds now'
               manual_close: 'YES'
               dependencies:
                 - name: 'HOST DOWN ! (Unavailable by ICMP ping)'
-                  expression: 'max(/HW UPS Legrand CS141/icmpping[,1,,24,],#3)=0'
+                  expression: 'max(/UPS Generex CS141/icmpping[,1,,24,],#3)=0'
               tags:
                 - tag: Loc
                   value: '{INVENTORY.LOCATION1}'
@@ -123,14 +123,14 @@ zabbix_export:
               value: Battery
           triggers:
             - uuid: e4e6999660f7421b8f76ce343b1b24b7
-              expression: 'last(/HW UPS Legrand CS141/upsBatteryStatus)<>2'
+              expression: 'last(/UPS Generex CS141/upsBatteryStatus)<>2'
               name: 'Battery Status on {HOST.NAME} is {ITEM.VALUE}'
               priority: HIGH
               description: 'Battery Status on {HOST.NAME} is {ITEM.VALUE}'
               manual_close: 'YES'
               dependencies:
                 - name: 'HOST DOWN ! (Unavailable by ICMP ping)'
-                  expression: 'max(/HW UPS Legrand CS141/icmpping[,1,,24,],#3)=0'
+                  expression: 'max(/UPS Generex CS141/icmpping[,1,,24,],#3)=0'
               tags:
                 - tag: Loc
                   value: '{INVENTORY.LOCATION1}'
@@ -148,31 +148,31 @@ zabbix_export:
               value: Battery
           triggers:
             - uuid: 96fd797b81c340aea7f36fc1265a8ef2
-              expression: 'last(/HW UPS Legrand CS141/upsBatteryTemperature)>65'
+              expression: 'last(/UPS Generex CS141/upsBatteryTemperature)>65'
               recovery_mode: RECOVERY_EXPRESSION
-              recovery_expression: 'last(/HW UPS Legrand CS141/upsBatteryTemperature)<60'
+              recovery_expression: 'last(/UPS Generex CS141/upsBatteryTemperature)<60'
               name: 'Battery temperature High'
               priority: HIGH
               manual_close: 'YES'
               dependencies:
                 - name: 'HOST DOWN ! (Unavailable by ICMP ping)'
-                  expression: 'max(/HW UPS Legrand CS141/icmpping[,1,,24,],#3)=0'
+                  expression: 'max(/UPS Generex CS141/icmpping[,1,,24,],#3)=0'
               tags:
                 - tag: Loc
                   value: '{INVENTORY.LOCATION1}'
             - uuid: 3231fbdfe0994e009b33baa8d38994e6
-              expression: 'last(/HW UPS Legrand CS141/upsBatteryTemperature)>55 and last(/HW UPS Legrand CS141/upsBatteryTemperature)<65'
+              expression: 'last(/UPS Generex CS141/upsBatteryTemperature)>55 and last(/UPS Generex CS141/upsBatteryTemperature)<65'
               recovery_mode: RECOVERY_EXPRESSION
-              recovery_expression: 'last(/HW UPS Legrand CS141/upsBatteryTemperature)<50'
+              recovery_expression: 'last(/UPS Generex CS141/upsBatteryTemperature)<50'
               name: 'Battery temperature Warning'
               priority: WARNING
               manual_close: 'YES'
               dependencies:
                 - name: 'Battery temperature High'
-                  expression: 'last(/HW UPS Legrand CS141/upsBatteryTemperature)>65'
-                  recovery_expression: 'last(/HW UPS Legrand CS141/upsBatteryTemperature)<60'
+                  expression: 'last(/UPS Generex CS141/upsBatteryTemperature)>65'
+                  recovery_expression: 'last(/UPS Generex CS141/upsBatteryTemperature)<60'
                 - name: 'HOST DOWN ! (Unavailable by ICMP ping)'
-                  expression: 'max(/HW UPS Legrand CS141/icmpping[,1,,24,],#3)=0'
+                  expression: 'max(/UPS Generex CS141/icmpping[,1,,24,],#3)=0'
               tags:
                 - tag: Loc
                   value: '{INVENTORY.LOCATION1}'
@@ -206,24 +206,24 @@ zabbix_export:
               value: Battery
           triggers:
             - uuid: 0f5a58812b594ab09a33bcb06a068e43
-              expression: 'last(/HW UPS Legrand CS141/upsEstimatedChargeRemaining)<20'
+              expression: 'last(/UPS Generex CS141/upsEstimatedChargeRemaining)<20'
               name: 'Battery Charge Depleted'
               priority: HIGH
               manual_close: 'YES'
               dependencies:
                 - name: 'HOST DOWN ! (Unavailable by ICMP ping)'
-                  expression: 'max(/HW UPS Legrand CS141/icmpping[,1,,24,],#3)=0'
+                  expression: 'max(/UPS Generex CS141/icmpping[,1,,24,],#3)=0'
               tags:
                 - tag: Loc
                   value: '{INVENTORY.LOCATION1}'
             - uuid: 42d9aa5cd27c47d8a414c9bdc5f29090
-              expression: 'last(/HW UPS Legrand CS141/upsEstimatedChargeRemaining)<80'
+              expression: 'last(/UPS Generex CS141/upsEstimatedChargeRemaining)<80'
               name: 'Battery Charge Less Than 80%'
               priority: WARNING
               manual_close: 'YES'
               dependencies:
                 - name: 'HOST DOWN ! (Unavailable by ICMP ping)'
-                  expression: 'max(/HW UPS Legrand CS141/icmpping[,1,,24,],#3)=0'
+                  expression: 'max(/UPS Generex CS141/icmpping[,1,,24,],#3)=0'
               tags:
                 - tag: Loc
                   value: '{INVENTORY.LOCATION1}'
@@ -241,13 +241,13 @@ zabbix_export:
               value: Battery
           triggers:
             - uuid: 69630aba62e748928fcf227d0393eba5
-              expression: 'last(/HW UPS Legrand CS141/upsEstimatedMinutesRemaining)<10'
+              expression: 'last(/UPS Generex CS141/upsEstimatedMinutesRemaining)<10'
               name: 'Battery Time Remaining Below 10 Minutes'
               priority: WARNING
               manual_close: 'YES'
               dependencies:
                 - name: 'HOST DOWN ! (Unavailable by ICMP ping)'
-                  expression: 'max(/HW UPS Legrand CS141/icmpping[,1,,24,],#3)=0'
+                  expression: 'max(/UPS Generex CS141/icmpping[,1,,24,],#3)=0'
               tags:
                 - tag: Loc
                   value: '{INVENTORY.LOCATION1}'
@@ -333,13 +333,13 @@ zabbix_export:
               value: General
           triggers:
             - uuid: 2cac225d4b794b009520190c1a1e138f
-              expression: 'last(/HW UPS Legrand CS141/upsIdentUptime)<300'
+              expression: 'last(/UPS Generex CS141/upsIdentUptime)<300'
               name: 'Device rebooted'
               priority: INFO
               manual_close: 'YES'
               dependencies:
                 - name: 'HOST DOWN ! (Unavailable by ICMP ping)'
-                  expression: 'max(/HW UPS Legrand CS141/icmpping[,1,,24,],#3)=0'
+                  expression: 'max(/UPS Generex CS141/icmpping[,1,,24,],#3)=0'
               tags:
                 - tag: Loc
                   value: '{INVENTORY.LOCATION1}'
@@ -356,7 +356,7 @@ zabbix_export:
               value: Input
           triggers:
             - uuid: 722402ef1dc7460398d5e8c2f23d1c71
-              expression: 'change(/HW UPS Legrand CS141/upsInputLineBads)<>0'
+              expression: 'change(/UPS Generex CS141/upsInputLineBads)<>0'
               name: 'UPS Input Power Line Bad'
               priority: HIGH
               description: |
@@ -365,7 +365,7 @@ zabbix_export:
               manual_close: 'YES'
               dependencies:
                 - name: 'HOST DOWN ! (Unavailable by ICMP ping)'
-                  expression: 'max(/HW UPS Legrand CS141/icmpping[,1,,24,],#3)=0'
+                  expression: 'max(/UPS Generex CS141/icmpping[,1,,24,],#3)=0'
               tags:
                 - tag: Loc
                   value: '{INVENTORY.LOCATION1}'
@@ -383,14 +383,14 @@ zabbix_export:
               value: Battery
           triggers:
             - uuid: 19948fd378f246de9eb89e853587d04d
-              expression: 'last(/HW UPS Legrand CS141/upsSecondsOnBattery)>30'
+              expression: 'last(/UPS Generex CS141/upsSecondsOnBattery)>30'
               name: 'UPS Running On Battery'
               priority: HIGH
               description: 'The UPS {HOST.NAME} is running on battery. Please check the battery power'
               manual_close: 'YES'
               dependencies:
                 - name: 'HOST DOWN ! (Unavailable by ICMP ping)'
-                  expression: 'max(/HW UPS Legrand CS141/icmpping[,1,,24,],#3)=0'
+                  expression: 'max(/UPS Generex CS141/icmpping[,1,,24,],#3)=0'
               tags:
                 - tag: Loc
                   value: '{INVENTORY.LOCATION1}'
@@ -437,12 +437,12 @@ zabbix_export:
                   value: Bypass
           trigger_prototypes:
             - uuid: 5c1f0e353efa48189fe4c2af84992aac
-              expression: 'last(/HW UPS Legrand CS141/upsBypassCurrent.[{#SNMPINDEX}])<>0 or last(/HW UPS Legrand CS141/upsBypassPower.[{#SNMPINDEX}])<>0'
+              expression: 'last(/UPS Generex CS141/upsBypassCurrent.[{#SNMPINDEX}])<>0 or last(/UPS Generex CS141/upsBypassPower.[{#SNMPINDEX}])<>0'
               name: 'UPS Bypassed phase {#SNMPINDEX}'
               priority: WARNING
               dependencies:
                 - name: 'HOST DOWN ! (Unavailable by ICMP ping)'
-                  expression: 'max(/HW UPS Legrand CS141/icmpping[,1,,24,],#3)=0'
+                  expression: 'max(/UPS Generex CS141/icmpping[,1,,24,],#3)=0'
               tags:
                 - tag: Value
                   value: '{ITEM.VALUE}'
@@ -452,17 +452,17 @@ zabbix_export:
               graph_items:
                 - color: F63100
                   item:
-                    host: 'HW UPS Legrand CS141'
+                    host: 'UPS Generex CS141'
                     key: 'upsBypassCurrent.[{#SNMPINDEX}]'
                 - sortorder: '1'
                   color: 2774A4
                   item:
-                    host: 'HW UPS Legrand CS141'
+                    host: 'UPS Generex CS141'
                     key: 'upsBypassPower.[{#SNMPINDEX}]'
                 - sortorder: '2'
                   color: F7941D
                   item:
-                    host: 'HW UPS Legrand CS141'
+                    host: 'UPS Generex CS141'
                     key: 'upsBypassVoltage.[{#SNMPINDEX}]'
         - uuid: d5a9d6c10ff442ceaa03b1e0e254d155
           name: 'UPS Input Phases'
@@ -506,12 +506,12 @@ zabbix_export:
                   value: Input
               trigger_prototypes:
                 - uuid: 1326eda6041e44bca5a61d4d93f3798d
-                  expression: 'last(/HW UPS Legrand CS141/upsInputFrequency.[{#SNMPINDEX}])>55 or last(/HW UPS Legrand CS141/upsInputFrequency.[{#SNMPINDEX}])<45'
+                  expression: 'last(/UPS Generex CS141/upsInputFrequency.[{#SNMPINDEX}])>55 or last(/UPS Generex CS141/upsInputFrequency.[{#SNMPINDEX}])<45'
                   name: 'UPS Input frequency outside nominal {#SNMPINDEX}'
                   priority: WARNING
                   dependencies:
                     - name: 'HOST DOWN ! (Unavailable by ICMP ping)'
-                      expression: 'max(/HW UPS Legrand CS141/icmpping[,1,,24,],#3)=0'
+                      expression: 'max(/UPS Generex CS141/icmpping[,1,,24,],#3)=0'
                   tags:
                     - tag: Value
                       value: '{ITEM.VALUE}'
@@ -541,22 +541,22 @@ zabbix_export:
               graph_items:
                 - color: 199C0D
                   item:
-                    host: 'HW UPS Legrand CS141'
+                    host: 'UPS Generex CS141'
                     key: 'upsInputFrequency.[{#SNMPINDEX}]'
                 - sortorder: '1'
                   color: F63100
                   item:
-                    host: 'HW UPS Legrand CS141'
+                    host: 'UPS Generex CS141'
                     key: 'upsInputCurrent.[{#SNMPINDEX}]'
                 - sortorder: '2'
                   color: F7941D
                   item:
-                    host: 'HW UPS Legrand CS141'
+                    host: 'UPS Generex CS141'
                     key: 'upsInputPower.[{#SNMPINDEX}]'
                 - sortorder: '3'
                   color: FC6EA3
                   item:
-                    host: 'HW UPS Legrand CS141'
+                    host: 'UPS Generex CS141'
                     key: 'upsInputVoltage.[{#SNMPINDEX}]'
         - uuid: 48183408548b4298b8811037775527fe
           name: 'UPS Output Phases'
@@ -580,12 +580,12 @@ zabbix_export:
                   value: Output
               trigger_prototypes:
                 - uuid: 663a14a651f8499f905db0faf37ecd96
-                  expression: 'last(/HW UPS Legrand CS141/upsOutputPercentLoad.[{#SNMPINDEX}],#2)>60'
+                  expression: 'last(/UPS Generex CS141/upsOutputPercentLoad.[{#SNMPINDEX}],#2)>60'
                   name: 'UPS Overloaded phase {#SNMPINDEX} (>60%)'
                   priority: HIGH
                   dependencies:
                     - name: 'HOST DOWN ! (Unavailable by ICMP ping)'
-                      expression: 'max(/HW UPS Legrand CS141/icmpping[,1,,24,],#3)=0'
+                      expression: 'max(/UPS Generex CS141/icmpping[,1,,24,],#3)=0'
             - uuid: 9426ee41b08442c4afc76f7e8cfd2b0a
               name: 'Output Power Phase {#SNMPINDEX}'
               type: SNMP_AGENT
@@ -598,15 +598,15 @@ zabbix_export:
                   value: Output
               trigger_prototypes:
                 - uuid: 2ad4e0ef56ac480c863d413f801d0327
-                  expression: 'abs(change(/HW UPS Legrand CS141/upsOutputPower.[{#SNMPINDEX}]))>1000'
+                  expression: 'abs(change(/UPS Generex CS141/upsOutputPower.[{#SNMPINDEX}]))>1000'
                   name: 'UPS Load Changed phase {#SNMPINDEX} (+/-1000W)'
                   priority: INFO
                   description: 'On {HOST.NAME} a big load change was detected - the output power changed by more than 1000 W between two checks.'
                   dependencies:
                     - name: 'HOST DOWN ! (Unavailable by ICMP ping)'
-                      expression: 'max(/HW UPS Legrand CS141/icmpping[,1,,24,],#3)=0'
+                      expression: 'max(/UPS Generex CS141/icmpping[,1,,24,],#3)=0'
                 - uuid: 2e4765b5decf495cb6821559d3e84db5
-                  expression: 'last(/HW UPS Legrand CS141/upsOutputPower.[{#SNMPINDEX}])<10'
+                  expression: 'last(/UPS Generex CS141/upsOutputPower.[{#SNMPINDEX}])<10'
                   name: 'UPS Low output power phase {#SNMPINDEX} (<10 W)'
                   status: DISABLED
                   discover: NO_DISCOVER
@@ -614,7 +614,7 @@ zabbix_export:
                   description: 'The output power for {HOST.NAME} is under {ITEM.VALUE}. Take actions to prevent this in future'
                   dependencies:
                     - name: 'HOST DOWN ! (Unavailable by ICMP ping)'
-                      expression: 'max(/HW UPS Legrand CS141/icmpping[,1,,24,],#3)=0'
+                      expression: 'max(/UPS Generex CS141/icmpping[,1,,24,],#3)=0'
                   tags:
                     - tag: Value
                       value: '{ITEM.VALUE}'
@@ -630,29 +630,29 @@ zabbix_export:
                   value: Output
               trigger_prototypes:
                 - uuid: dc557f0894bd4171aeb4ff564dbd3de9
-                  expression: 'last(/HW UPS Legrand CS141/upsOutputVoltage.[{#SNMPINDEX}],#3)<200 or last(/HW UPS Legrand CS141/upsOutputVoltage.[{#SNMPINDEX}],#3)>250'
+                  expression: 'last(/UPS Generex CS141/upsOutputVoltage.[{#SNMPINDEX}],#3)<200 or last(/UPS Generex CS141/upsOutputVoltage.[{#SNMPINDEX}],#3)>250'
                   name: 'UPS Power Voltage outside nominal phase {#SNMPINDEX}'
                   priority: HIGH
                   dependencies:
                     - name: 'HOST DOWN ! (Unavailable by ICMP ping)'
-                      expression: 'max(/HW UPS Legrand CS141/icmpping[,1,,24,],#3)=0'
+                      expression: 'max(/UPS Generex CS141/icmpping[,1,,24,],#3)=0'
           graph_prototypes:
             - uuid: 371048bf26ed462c9578daf49ffadef2
               name: 'UPS Output Phase {#SNMPINDEX}'
               graph_items:
                 - color: F63100
                   item:
-                    host: 'HW UPS Legrand CS141'
+                    host: 'UPS Generex CS141'
                     key: 'upsOutputPercentLoad.[{#SNMPINDEX}]'
                 - sortorder: '1'
                   color: 2774A4
                   item:
-                    host: 'HW UPS Legrand CS141'
+                    host: 'UPS Generex CS141'
                     key: 'upsOutputPower.[{#SNMPINDEX}]'
                 - sortorder: '2'
                   color: F7941D
                   item:
-                    host: 'HW UPS Legrand CS141'
+                    host: 'UPS Generex CS141'
                     key: 'upsOutputVoltage.[{#SNMPINDEX}]'
       macros:
         - macro: '{$ICMP_LOSS_WARN}'
@@ -687,15 +687,15 @@ zabbix_export:
       graph_items:
         - color: DD0000
           item:
-            host: 'HW UPS Legrand CS141'
+            host: 'UPS Generex CS141'
             key: upsBatteryTemperature
         - sortorder: '1'
           color: '008800'
           item:
-            host: 'HW UPS Legrand CS141'
+            host: 'UPS Generex CS141'
             key: upsEstimatedChargeRemaining
         - sortorder: '2'
           color: 2774A4
           item:
-            host: 'HW UPS Legrand CS141'
+            host: 'UPS Generex CS141'
             key: upsEstimatedMinutesRemaining
